@@ -1,15 +1,15 @@
-# Använd en officiell OpenJDK-bild som basbild
-FROM openjdk:11-jdk-slim
+# Steg 1: Använd en officiell Java runtime-bild
+FROM openjdk:17-jdk-alpine
 
-# Sätt arbetskatalogen i containern
+# Steg 2: Ställ in arbetskatalogen i containern
 WORKDIR /app
 
-# Kopiera JAR-filen från den lokala `target`-mappen till containern
-ARG JAR_FILE=target/journalsystem-backend-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app.jar
+# Steg 3: Kopiera jar-filen till containern
+# Byt ut 'JournalSystem-backend.jar' mot ditt faktiska jar-filnamn
+COPY target/JournalSystem-backend-0.0.1-SNAPSHOT.jar app.jar
 
-# Exponera porten som din applikation körs på
+# Steg 4: Exponera porten som Spring Boot använder
 EXPOSE 8080
 
-# Kommando för att köra applikationen
+# Steg 5: Definiera kommandot för att köra applikationen
 ENTRYPOINT ["java", "-jar", "app.jar"]

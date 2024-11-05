@@ -15,6 +15,10 @@ public class Condition {
     @JoinColumn(name = "patient_id")
     private Patient patient;
 
+    @ManyToOne
+    @JoinColumn(name = "practitioner_id")
+    private Practitioner practitioner; // Den läkare eller personal som fastställt diagnosen
+
     public Long getId() {
         return id;
     }
@@ -33,6 +37,14 @@ public class Condition {
 
     public String getDescription() {
         return description;
+    }
+
+    public Practitioner getPractitioner() {
+        return practitioner;
+    }
+
+    public void setPractitioner(Practitioner practitioner) {
+        this.practitioner = practitioner;
     }
 
     public void setDescription(String description) {

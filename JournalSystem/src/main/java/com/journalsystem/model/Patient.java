@@ -10,10 +10,22 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
     private String name;
     private String personalNumber;
     private String address;
     private Date dateOfBirth;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     @OneToMany(mappedBy = "patient")
     private List<Observation> observations;
@@ -29,8 +41,9 @@ public class Patient {
         this.id = id;
     }
 
+    // Länkad metod som returnerar user.fullName som patientens namn
     public String getName() {
-        return name;
+        return user != null ? user.getFullName() : null;
     }
 
     public void setName(String name) {
