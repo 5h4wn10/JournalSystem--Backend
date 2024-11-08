@@ -24,4 +24,8 @@ public class PractitionerService {
         Optional<Practitioner> practitioner = practitionerRepository.findById(id);
         return practitioner.orElse(null);
     }
+
+    public Practitioner getPractitionerByUserId(Long userId) {
+        return practitionerRepository.findByUserId(userId).orElse(null);
+    }
 }

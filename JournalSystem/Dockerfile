@@ -1,3 +1,4 @@
+
 # Steg 1: Använd en officiell Java runtime-bild
 FROM openjdk:17-jdk-alpine
 

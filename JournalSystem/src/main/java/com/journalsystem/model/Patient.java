@@ -12,7 +12,9 @@ public class Patient {
     private Long id;
 
     @OneToOne
+    @MapsId
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    //@JoinColumn(name = "id")  // Detta gör att user_id används som primärnyckel
     private User user;
     private String name;
     private String personalNumber;

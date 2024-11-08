@@ -12,6 +12,8 @@ public class Practitioner {
     private String name;
     private String specialty;
 
+
+
     @OneToMany(mappedBy = "practitioner")
     private List<Observation> observations;
 
@@ -23,7 +25,9 @@ public class Practitioner {
     private Organization organization;
 
     @OneToOne
+    @MapsId
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    //@JoinColumn(name = "id")  // Detta gör att user_id används som primärnyckel
     private User user;
 
     public User getUser() {

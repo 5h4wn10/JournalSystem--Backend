@@ -3,7 +3,8 @@ package com.journalsystem.model;
 import jakarta.persistence.*;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Optional;
+
 @Entity
 public class Observation {
     @Id

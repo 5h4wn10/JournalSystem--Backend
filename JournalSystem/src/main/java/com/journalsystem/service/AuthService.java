@@ -10,6 +10,7 @@ import com.journalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 
@@ -26,7 +27,12 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public void registerUser(String username, String password, String fullName, Role role) {
+    @Transactional
+    public boolean registerUser(String username, String password, String fullName, Role role) {
+        if (userRepository.existsByUsername(username)) {
+            System.out.println("Användarnamnet är redan upptaget.");
+            return false;
+        }
         User user = new User();
         user.setUsername(username);
         user.setPassword(passwordEncoder.encode(password));
@@ -50,24 +56,9 @@ public class AuthService {
             practitioner.setName(user.getFullName());
             practitionerRepository.save(practitioner);
         }
+        return true;
     }
 
-    /*public void registerUser(String username, String password, String fullName, Role role) {
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setFullName(fullName);
-        user.setRoles(Set.of(role));
-
-        userRepository.save(user);
-
-        // Skapa en Patient-post om rollen är PATIENT
-        if (role == Role.PATIENT) {
-            Patient patient = new Patient();
-            patient.setUser(user);
-            patientRepository.save(patient);
-        }
-    }*/
 
 
 
