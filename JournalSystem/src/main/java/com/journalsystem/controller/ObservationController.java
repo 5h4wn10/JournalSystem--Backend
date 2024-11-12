@@ -7,6 +7,7 @@ import com.journalsystem.service.ObservationService;
 import com.journalsystem.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -27,18 +28,25 @@ public class ObservationController {
         return observationService.getAllObservations();
     }
 
+
+    @PostMapping
+    public Observation addObservation(@RequestBody Observation observation, Authentication authentication) {
+        // Automatically associate with the currently authenticated practitioner
+        return observationService.addObservationForPractitioner(observation, authentication);
+    }
+
     // Add an observation for a specific patient
     @PostMapping("/patient/{patientId}")
-    public Observation addObservationToPatient(@RequestBody Observation observation, @PathVariable Long patientId) {
+    public Observation addObservationForPatient(@RequestBody Observation observation, @PathVariable Long patientId, Authentication authentication) {
         Patient patient = patientService.getPatientById(patientId);
+
         if (patient == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
         }
 
-        // Save the observation for the patient with the currently logged-in practitioner
-        return observationService.addObservationForPatient(observation, patient);
+        // Save the observation for the patient, with the current practitioner as the observer
+        return observationService.addObservationForPatient(observation, patient, authentication);
     }
-
     // Get a specific observation by ID
     @GetMapping("/{id}")
     public Observation getObservationById(@PathVariable Long id) {

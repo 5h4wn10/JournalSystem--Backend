@@ -38,25 +38,34 @@ public class ObservationService {
         return observationRepository.save(observation);
     }
 
-
-    public Observation addObservationForPatient(Observation observation, Patient patient) {
-        // Fetch the logged-in practitioner
-        Practitioner practitioner = practitionerService.getLoggedInPractitioner();
-
-        if (practitioner == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No authorized practitioner found");
-        }
-
-        // Associate the observation with the patient and the practitioner
-        observation.setPatient(patient);
+    public Observation addObservationForPractitioner(Observation observation, Authentication authentication) {
+        Practitioner practitioner = getAuthenticatedPractitioner(authentication);
         observation.setPractitioner(practitioner);
-
         return observationRepository.save(observation);
     }
 
+
+    public Observation addObservationForPatient(Observation observation, Patient patient, Authentication authentication) {
+        Practitioner practitioner = getAuthenticatedPractitioner(authentication);
+        observation.setPatient(patient);
+        observation.setPractitioner(practitioner);
+        return observationRepository.save(observation);
+    }
+
+    private Practitioner getAuthenticatedPractitioner(Authentication authentication) {
+        String username = authentication.getName();
+
+        // First, find the User by username
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user not found"));
+
+        // Then, find the Practitioner by user ID
+        return practitionerRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user is not a practitioner"));
+    }
+
     public Observation getObservationById(Long id) {
-        Optional<Observation> observation = observationRepository.findById(id);
-        return observation.orElse(null);
+        return observationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Observation not found"));
     }
 
 }

@@ -37,10 +37,7 @@ public class AuthService {
 
         User user = new User();
         user.setUsername(username);
-
-        // Encode password before saving it to the database
         user.setPassword(passwordEncoder.encode(password));  // Securely hash the password
-
         user.setFullName(fullName);
         user.setRoles(Collections.singleton(role));
 
@@ -52,9 +49,7 @@ public class AuthService {
             patient.setUser(user);
             patient.setName(user.getFullName());
             patientRepository.save(patient);
-        }
-
-        if (role == Role.DOCTOR || role == Role.STAFF) {
+        } else if (role == Role.DOCTOR || role == Role.STAFF) {
             Practitioner practitioner = new Practitioner();
             practitioner.setUser(user);
             practitioner.setName(user.getFullName());

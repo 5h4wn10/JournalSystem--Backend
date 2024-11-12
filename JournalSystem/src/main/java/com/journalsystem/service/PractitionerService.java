@@ -47,7 +47,6 @@ public class PractitionerService {
 
         // Get the username of the authenticated user
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-        System.out.println("JOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOooo" + username);
 
         // Find the user by username
         User user = userRepository.findByUsername(username)
