@@ -35,11 +35,7 @@ public class ConditionService {
         return conditionRepository.save(condition);
     }
 
-    public Condition addConditionForPatient(Condition condition, Patient patient) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal(); // Hämta inloggad User
-        Practitioner practitioner = practitionerService.getPractitionerByUserId(user.getId());
-
+    /*public Condition addConditionForPatient(Condition condition, Patient patient, Practitioner practitioner) {
         if (practitioner == null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ingen behörighet");
         }
@@ -47,14 +43,13 @@ public class ConditionService {
         condition.setPatient(patient);
         condition.setPractitioner(practitioner);
         return conditionRepository.save(condition);
+    }*/
+
+    public Condition addConditionForPatient(Condition condition, Patient patient) {
+        condition.setPatient(patient);
+        return conditionRepository.save(condition);
     }
 
-
-    /*private Practitioner getLoggedInPractitioner() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return practitionerRepository.findByUsername(username);
-    }*/
 
     public Condition getConditionById(Long id) {
         Optional<Condition> condition = conditionRepository.findById(id);

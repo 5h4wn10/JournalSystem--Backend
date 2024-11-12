@@ -4,7 +4,9 @@ import com.journalsystem.dto.AuthDTO;
 import com.journalsystem.model.Role;
 import com.journalsystem.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,7 +22,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String loginUser() {
-        return "Login fungera bra";
+    public String loginUser(@RequestBody AuthDTO authRequest) {
+        boolean isAuthenticated = authService.authenticate(authRequest.getUsername(), authRequest.getPassword());
+        if (isAuthenticated) {
+            return "Login successful!";
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+        }
     }
+
+
+
 }

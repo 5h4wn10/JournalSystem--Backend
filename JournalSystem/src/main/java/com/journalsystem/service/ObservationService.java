@@ -6,11 +6,11 @@ import com.journalsystem.model.Practitioner;
 import com.journalsystem.model.User;
 import com.journalsystem.repository.ObservationRepository;
 import com.journalsystem.repository.PractitionerRepository;
+import com.journalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,6 +26,9 @@ public class ObservationService {
     private PractitionerRepository practitionerRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private PractitionerService practitionerService;
     public List<Observation> getAllObservations() {
         return observationRepository.findAll();
@@ -35,43 +38,25 @@ public class ObservationService {
         return observationRepository.save(observation);
     }
 
-   /* public Observation addObservationForPatient(Observation observation, Patient patient, Practitioner practitioner) {
-        //Practitioner practitioner = getLoggedInPractitioner();
-        if (practitioner == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ingen behörighet");
-        }
-        observation.setPatient(patient);
-        observation.setPractitioner(practitioner);
-        return observationRepository.save(observation);
-    }*/
 
     public Observation addObservationForPatient(Observation observation, Patient patient) {
-        // Hämta autentisering från SecurityContext
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal(); // Hämta inloggade User
-        // Hämta practitioner baserat på User-ID
-        Practitioner practitioner = practitionerService.getPractitionerByUserId(user.getId());
+        // Fetch the logged-in practitioner
+        Practitioner practitioner = practitionerService.getLoggedInPractitioner();
 
         if (practitioner == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ingen behörighet");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No authorized practitioner found");
         }
 
-        // Koppla patient och inloggad practitioner till observationen
+        // Associate the observation with the patient and the practitioner
         observation.setPatient(patient);
         observation.setPractitioner(practitioner);
 
-        // Spara observationen
         return observationRepository.save(observation);
     }
-
-    /*private Practitioner getLoggedInPractitioner() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return practitionerRepository.findByUsername(username);
-    }*/
 
     public Observation getObservationById(Long id) {
         Optional<Observation> observation = observationRepository.findById(id);
         return observation.orElse(null);
     }
+
 }

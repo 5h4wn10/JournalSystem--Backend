@@ -1,20 +1,15 @@
 package com.journalsystem.service;
 
-import com.journalsystem.model.CustomUserDetails;
 import com.journalsystem.model.User;
 import com.journalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
-
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-
     @Autowired
     private UserRepository userRepository;
 
@@ -23,13 +18,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Kontrollera att rollerna inkluderar "PATIENT" om användaren är patient
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-                        .collect(Collectors.toList())
-        );
+        // Wrap your User entity in a UserDetails object
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getUsername())
+                .password(user.getPassword()) // Make sure password is encoded
+                .roles(user.getRoles().toArray(new String[0])) // Convert roles to Spring Security roles
+                .build();
     }
 }

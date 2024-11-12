@@ -19,30 +19,34 @@ public class AuthService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private PatientRepository patientRepository;
 
     @Autowired
     private PractitionerRepository practitionerRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
-    @Transactional
+    @Autowired
+    private PasswordEncoder passwordEncoder;  // Inject PasswordEncoder for secure password handling
+
     public boolean registerUser(String username, String password, String fullName, Role role) {
         if (userRepository.existsByUsername(username)) {
             System.out.println("Användarnamnet är redan upptaget.");
             return false;
         }
+
         User user = new User();
         user.setUsername(username);
-        user.setPassword(passwordEncoder.encode(password));
-        user.setFullName(fullName);
 
-        // Tilldela rollen direkt
+        // Encode password before saving it to the database
+        user.setPassword(passwordEncoder.encode(password));  // Securely hash the password
+
+        user.setFullName(fullName);
         user.setRoles(Collections.singleton(role));
 
         userRepository.save(user);
 
+        // Create associated Patient or Practitioner entity based on role
         if (role == Role.PATIENT) {
             Patient patient = new Patient();
             patient.setUser(user);
@@ -56,10 +60,14 @@ public class AuthService {
             practitioner.setName(user.getFullName());
             practitionerRepository.save(practitioner);
         }
+
         return true;
     }
 
-
-
-
+    // Method for authenticating user, now using PasswordEncoder
+    public boolean authenticate(String username, String password) {
+        return userRepository.findByUsername(username)
+                .map(user -> passwordEncoder.matches(password, user.getPassword()))  // Check encoded password
+                .orElse(false);
+    }
 }
