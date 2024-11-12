@@ -37,26 +37,17 @@ public class PractitionerService {
     }
 
     public Practitioner getLoggedInPractitioner() {
-        // Retrieve the currently authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Check if the authentication is valid
-        if (authentication == null || !authentication.isAuthenticated() || !(authentication.getPrincipal() instanceof UserDetails)) {
+        if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authenticated user found");
         }
-
-        // Get the username of the authenticated user
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
-        System.out.println("JOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOooo" + username);
-
-        // Find the user by username
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "User not found"));
-
-        // Find and return the practitioner associated with this user
         return practitionerRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.FORBIDDEN, "Practitioner not found"));
     }
+
 
     public Practitioner getPractitionerByUserId(Long userId) {
         return practitionerRepository.findByUserId(userId).orElse(null);

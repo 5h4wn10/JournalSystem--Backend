@@ -1,5 +1,6 @@
 package com.journalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -30,6 +31,7 @@ public class Patient {
     }
 
     @OneToMany(mappedBy = "patient")
+    @JsonManagedReference
     private List<Observation> observations;
 
     @OneToMany(mappedBy = "patient")

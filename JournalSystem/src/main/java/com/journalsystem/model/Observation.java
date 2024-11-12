@@ -1,9 +1,10 @@
 package com.journalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
-import java.util.Optional;
 
 @Entity
 public class Observation {
@@ -11,14 +12,16 @@ public class Observation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String details;
-    private Date observationDate;
+    private LocalDate observationDate;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "practitioner_id")
+    @JsonIgnore
     private Practitioner practitioner;
 
     public Long getId() {
@@ -37,11 +40,11 @@ public class Observation {
         this.details = details;
     }
 
-    public Date getObservationDate() {
+    public LocalDate getObservationDate() {
         return observationDate;
     }
 
-    public void setObservationDate(Date observationDate) {
+    public void setObservationDate(LocalDate observationDate) {
         this.observationDate = observationDate;
     }
 

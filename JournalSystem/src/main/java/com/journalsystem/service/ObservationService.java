@@ -1,5 +1,6 @@
 package com.journalsystem.service;
 
+import com.journalsystem.dto.ObservationDTO;
 import com.journalsystem.model.Observation;
 import com.journalsystem.model.Patient;
 import com.journalsystem.model.Practitioner;
@@ -39,15 +40,10 @@ public class ObservationService {
     }
 
 
-    public Observation addObservationForPatient(Observation observation, Patient patient) {
-        // Fetch the logged-in practitioner
-        Practitioner practitioner = practitionerService.getLoggedInPractitioner();
-
-        if (practitioner == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No authorized practitioner found");
-        }
-
-        // Associate the observation with the patient and the practitioner
+    public Observation addObservationForPatient(Observation observationRequest, Patient patient, Practitioner practitioner) {
+        Observation observation = new Observation();
+        observation.setDetails(observationRequest.getDetails());
+        observation.setObservationDate(observationRequest.getObservationDate());
         observation.setPatient(patient);
         observation.setPractitioner(practitioner);
 

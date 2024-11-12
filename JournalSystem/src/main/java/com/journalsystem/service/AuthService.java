@@ -38,11 +38,9 @@ public class AuthService {
         User user = new User();
         user.setUsername(username);
 
-        // Encode password before saving it to the database
-        user.setPassword(passwordEncoder.encode(password));  // Securely hash the password
-
         user.setFullName(fullName);
         user.setRoles(Collections.singleton(role));
+        user.setPassword(password);
 
         userRepository.save(user);
 
