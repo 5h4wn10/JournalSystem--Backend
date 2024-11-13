@@ -1,11 +1,9 @@
 package com.journalsystem.service;
 
-import com.journalsystem.model.Condition;
-import com.journalsystem.model.Patient;
-import com.journalsystem.model.Practitioner;
-import com.journalsystem.model.User;
+import com.journalsystem.model.*;
 import com.journalsystem.repository.ConditionRepository;
 import com.journalsystem.repository.PractitionerRepository;
+import com.journalsystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -25,7 +23,7 @@ public class ConditionService {
     private PractitionerRepository practitionerRepository;
 
     @Autowired
-    private PractitionerService practitionerService;
+    private UserRepository userRepository;
 
     public List<Condition> getAllConditions() {
         return conditionRepository.findAll();
@@ -45,9 +43,24 @@ public class ConditionService {
         return conditionRepository.save(condition);
     }*/
 
-    public Condition addConditionForPatient(Condition condition, Patient patient) {
+    public Condition addConditionForPatient(Condition condition, Patient patient, Authentication authentication) {
+        Practitioner practitioner = getAuthenticatedPractitioner(authentication);
         condition.setPatient(patient);
+        condition.setPractitioner(practitioner);
         return conditionRepository.save(condition);
+    }
+
+
+    private Practitioner getAuthenticatedPractitioner(Authentication authentication) {
+        String username = authentication.getName();
+
+        // First, find the User by username
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user not found"));
+
+        // Then, find the Practitioner by user ID
+        return practitionerRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user is not a practitioner"));
     }
 
 

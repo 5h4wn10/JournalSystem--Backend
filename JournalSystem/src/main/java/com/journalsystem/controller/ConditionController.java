@@ -9,6 +9,7 @@ import com.journalsystem.service.PractitionerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -36,31 +37,26 @@ public class ConditionController {
         return conditionService.addCondition(condition);
     }
 
-    /*@PostMapping("/patient/{patientId}")
-    public Condition addConditionForPatient(@RequestBody Condition condition, @PathVariable Long patientId, @RequestParam Long practitionerId) {
-        Patient patient = patientService.getPatientById(patientId);
-        Practitioner practitioner = practitionerService.getPractitionerById(practitionerId);
 
-        if (patient == null || practitioner == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient or Practitioner not found");
-        }
 
-        return conditionService.addConditionForPatient(condition, patient, practitioner);
-    }*/
-
+    @PreAuthorize("hasAuthority('DOCTOR')")
     @PostMapping("/patient/{patientId}")
-    public Condition addConditionForPatient(@RequestBody Condition condition, @PathVariable Long patientId) {
+    public Condition addConditionForPatient(@RequestBody Condition condition, @PathVariable Long patientId, Authentication authentication) {
         Patient patient = patientService.getPatientById(patientId);
 
         if (patient == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Patient not found");
         }
 
-        return conditionService.addConditionForPatient(condition, patient);
+        return conditionService.addConditionForPatient(condition, patient, authentication);
     }
 
     @GetMapping("/{id}")
     public Condition getConditionById(@PathVariable Long id) {
-        return conditionService.getConditionById(id);
+        Condition condition = conditionService.getConditionById(id);
+        if (condition == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Condition not found");
+        }
+        return condition;
     }
 }

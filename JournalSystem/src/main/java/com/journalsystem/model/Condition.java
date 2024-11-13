@@ -1,5 +1,7 @@
 package com.journalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,10 +15,12 @@ public class Condition {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "practitioner_id")
+    @JsonIgnore
     private Practitioner practitioner; // Den läkare eller personal som fastställt diagnosen
 
     public Long getId() {

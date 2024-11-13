@@ -38,9 +38,10 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name())) // Prefix each role with ROLE_
-                .collect(Collectors.toSet());
+                .map(role -> (GrantedAuthority) () -> role.name())
+                .collect(Collectors.toList());
     }
+
 
     public Long getId() {
         return id;

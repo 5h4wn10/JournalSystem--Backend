@@ -1,5 +1,6 @@
 package com.journalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -30,11 +31,15 @@ public class Patient {
     }
 
     @OneToMany(mappedBy = "patient")
+    @JsonManagedReference
     private List<Observation> observations;
 
     @OneToMany(mappedBy = "patient")
     private List<Encounter> encounters;
 
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Condition> conditions;
     public Long getId() {
         return id;
     }
@@ -46,6 +51,14 @@ public class Patient {
     // Länkad metod som returnerar user.fullName som patientens namn
     public String getName() {
         return user != null ? user.getFullName() : null;
+    }
+
+    public List<Condition> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<Condition> conditions) {
+        this.conditions = conditions;
     }
 
     public void setName(String name) {

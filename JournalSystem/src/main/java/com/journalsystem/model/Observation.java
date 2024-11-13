@@ -1,5 +1,7 @@
 package com.journalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -15,10 +17,13 @@ public class Observation {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
+    @JsonBackReference
+    @JsonIgnore
     private Patient patient;
 
     @ManyToOne
     @JoinColumn(name = "practitioner_id")
+    @JsonIgnore
     private Practitioner practitioner;
 
     public Long getId() {

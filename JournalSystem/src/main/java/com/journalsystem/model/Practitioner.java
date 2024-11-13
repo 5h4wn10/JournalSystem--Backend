@@ -1,5 +1,6 @@
 package com.journalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -9,6 +10,13 @@ public class Practitioner {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    //@JoinColumn(name = "id")  // Detta gör att user_id används som primärnyckel
+    private User user;
+
     private String name;
     private String specialty;
 
@@ -24,11 +32,17 @@ public class Practitioner {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    //@JoinColumn(name = "id")  // Detta gör att user_id används som primärnyckel
-    private User user;
+    @OneToMany(mappedBy = "practitioner", cascade = CascadeType.ALL)
+    private List<Condition> conditions;
+
+    public List<Condition> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(List<Condition> conditions) {
+        this.conditions = conditions;
+    }
+
 
     public User getUser() {
         return user;
