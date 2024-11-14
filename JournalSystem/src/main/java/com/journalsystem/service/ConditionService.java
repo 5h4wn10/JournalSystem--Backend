@@ -33,16 +33,6 @@ public class ConditionService {
         return conditionRepository.save(condition);
     }
 
-    /*public Condition addConditionForPatient(Condition condition, Patient patient, Practitioner practitioner) {
-        if (practitioner == null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ingen behörighet");
-        }
-
-        condition.setPatient(patient);
-        condition.setPractitioner(practitioner);
-        return conditionRepository.save(condition);
-    }*/
-
     public Condition addConditionForPatient(Condition condition, Patient patient, Authentication authentication) {
         Practitioner practitioner = getAuthenticatedPractitioner(authentication);
         condition.setPatient(patient);
@@ -67,5 +57,10 @@ public class ConditionService {
     public Condition getConditionById(Long id) {
         Optional<Condition> condition = conditionRepository.findById(id);
         return condition.orElse(null);
+    }
+
+
+    public List<Condition> getConditionsByPatientId(Long patientId) {
+        return conditionRepository.findByPatientId(patientId);
     }
 }

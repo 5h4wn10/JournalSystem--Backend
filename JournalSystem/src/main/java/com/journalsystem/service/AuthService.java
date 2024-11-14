@@ -65,4 +65,6 @@ public class AuthService {
                 .map(user -> passwordEncoder.matches(password, user.getPassword()))  // Check encoded password
                 .orElse(false);
     }
+
+
 }

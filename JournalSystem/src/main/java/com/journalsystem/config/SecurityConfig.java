@@ -3,44 +3,47 @@ package com.journalsystem.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())  // Disable CSRF for testing
+                .csrf(csrf -> csrf.disable()) // Inaktivera CSRF för enkelhet
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Lägg till CORS-konfiguration
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers("/api/auth/**").permitAll()  // Public access for authentication endpoints
-                        .requestMatchers("/api/observations/**", "/api/conditions/**").hasAuthority("DOCTOR")
-                        .anyRequest().authenticated()  // Require authentication for all other requests
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/observations/**", "/api/conditions/**").hasAnyAuthority("DOCTOR", "PATIENT")
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Enable basic HTTP authentication for simplicity
+                .httpBasic(Customizer.withDefaults());
 
         return http.build();
     }
 
     @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);  // Viktigt för att möjliggöra cookies
-        config.addAllowedOrigin("http://localhost:3000");  // Lägg till din frontend-URL
-        config.addAllowedHeader("*");
+        config.addAllowedOrigin("http://localhost:3000"); // Din frontend-URL
         config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
 
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }

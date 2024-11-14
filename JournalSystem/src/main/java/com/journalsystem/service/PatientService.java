@@ -1,6 +1,7 @@
 package com.journalsystem.service;
 
 import com.journalsystem.model.Patient;
+import com.journalsystem.model.User;
 import com.journalsystem.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,5 +24,9 @@ public class PatientService {
     public Patient getPatientById(Long id) {
         Optional<Patient> patient = patientRepository.findById(id);
         return patient.orElse(null);
+    }
+
+    public Optional<Patient> findPatientByUser(Optional<User> user) {
+        return Optional.ofNullable(patientRepository.findByUser(user));
     }
 }

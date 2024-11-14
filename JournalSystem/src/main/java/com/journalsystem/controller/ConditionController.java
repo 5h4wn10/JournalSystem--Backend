@@ -8,6 +8,7 @@ import com.journalsystem.service.PatientService;
 import com.journalsystem.service.PractitionerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,6 @@ public class ConditionController {
     @Autowired
     private PatientService patientService;
 
-    @Autowired
-    private PractitionerService practitionerService;
-
     @GetMapping
     public List<Condition> getAllConditions() {
         return conditionService.getAllConditions();
@@ -39,7 +37,7 @@ public class ConditionController {
 
 
 
-    @PreAuthorize("hasAuthority('DOCTOR')")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'STAFF')")
     @PostMapping("/patient/{patientId}")
     public Condition addConditionForPatient(@RequestBody Condition condition, @PathVariable Long patientId, Authentication authentication) {
         Patient patient = patientService.getPatientById(patientId);
@@ -58,5 +56,14 @@ public class ConditionController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Condition not found");
         }
         return condition;
+    }
+
+
+
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'PATIENT', 'STAFF')")
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<Condition>> getConditionsByPatientId(@PathVariable Long patientId) {
+        List<Condition> conditions = conditionService.getConditionsByPatientId(patientId);
+        return ResponseEntity.ok(conditions);
     }
 }

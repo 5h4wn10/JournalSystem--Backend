@@ -68,4 +68,8 @@ public class ObservationService {
         return observationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Observation not found"));
     }
 
+    public List<Observation> getObservationsByPatientId(Long patientId) {
+        return observationRepository.findByPatientId(patientId);
+    }
+
 }

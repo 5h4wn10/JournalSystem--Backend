@@ -7,6 +7,7 @@ import com.journalsystem.service.ObservationService;
 import com.journalsystem.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,7 @@ public class ObservationController {
     }
 
     // Add an observation for a specific patient
-    @PreAuthorize("hasAuthority('DOCTOR')")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'STAFF')")
     @PostMapping("/patient/{patientId}")
     public Observation addObservationForPatient(@RequestBody Observation observation, @PathVariable Long patientId, Authentication authentication) {
         Patient patient = patientService.getPatientById(patientId);
@@ -57,5 +58,14 @@ public class ObservationController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Observation not found");
         }
         return observation;
+    }
+
+
+
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'PATIENT', 'STAFF')")
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<Observation>> getObservationsByPatientId(@PathVariable Long patientId) {
+        List<Observation> observations = observationService.getObservationsByPatientId(patientId);
+        return ResponseEntity.ok(observations);
     }
 }
