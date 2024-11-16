@@ -1,5 +1,6 @@
 package com.journalsystem.service;
 
+import com.journalsystem.dto.ConditionDTO;
 import com.journalsystem.model.*;
 import com.journalsystem.repository.ConditionRepository;
 import com.journalsystem.repository.PractitionerRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ConditionService {
@@ -34,9 +36,8 @@ public class ConditionService {
     }
 
     public Condition addConditionForPatient(Condition condition, Patient patient, Authentication authentication) {
-        Practitioner practitioner = getAuthenticatedPractitioner(authentication);
         condition.setPatient(patient);
-        condition.setPractitioner(practitioner);
+        condition.setPractitioner(getAuthenticatedPractitioner(authentication));
         return conditionRepository.save(condition);
     }
 
@@ -60,7 +61,10 @@ public class ConditionService {
     }
 
 
-    public List<Condition> getConditionsByPatientId(Long patientId) {
-        return conditionRepository.findByPatientId(patientId);
+    public List<ConditionDTO> getConditionsByPatientId(Long patientId) {
+        List<Condition> conditions = conditionRepository.findByPatientId(patientId);
+        return conditions.stream()
+                .map(ConditionDTO::new)  // Konvertera varje Condition till ConditionDTO
+                .collect(Collectors.toList());
     }
 }

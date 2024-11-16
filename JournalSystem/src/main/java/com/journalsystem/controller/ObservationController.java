@@ -1,5 +1,6 @@
 package com.journalsystem.controller;
 
+import com.journalsystem.dto.ObservationDTO;
 import com.journalsystem.model.Observation;
 import com.journalsystem.model.Patient;
 import com.journalsystem.service.AuthService;
@@ -26,8 +27,8 @@ public class ObservationController {
 
     // Get all observations
     @GetMapping
-    public List<Observation> getAllObservations() {
-        return observationService.getAllObservations();
+    public List<ObservationDTO> getAllObservations() {
+        return observationService.getAllObservations().stream().map(ObservationDTO::new).toList();
     }
 
 
@@ -64,8 +65,8 @@ public class ObservationController {
 
     @PreAuthorize("hasAnyAuthority('DOCTOR', 'PATIENT', 'STAFF')")
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<Observation>> getObservationsByPatientId(@PathVariable Long patientId) {
-        List<Observation> observations = observationService.getObservationsByPatientId(patientId);
+    public ResponseEntity<List<ObservationDTO>> getObservationsByPatientId(@PathVariable Long patientId) {
+        List<ObservationDTO> observations = observationService.getObservationsByPatientId(patientId);
         return ResponseEntity.ok(observations);
     }
 }

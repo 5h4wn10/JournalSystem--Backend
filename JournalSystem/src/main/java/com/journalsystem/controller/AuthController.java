@@ -29,20 +29,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@RequestBody AuthDTO authRequest, @RequestParam Role role) {
-        authService.registerUser(authRequest.getUsername(), authRequest.getPassword(), authRequest.getFullName(), role);
-        return "Användare registrerad korrekt" + role;
-    }
-
-    /*@PostMapping("/login")
-    public String loginUser(@RequestBody AuthDTO authRequest) {
-        boolean isAuthenticated = authService.authenticate(authRequest.getUsername(), authRequest.getPassword());
-        if (isAuthenticated) {
-            return "Login successful!";
+        boolean isRegistered = authService.registerUser(authRequest, role);
+        if (isRegistered) {
+            return "Användare registrerad korrekt som " + role;
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Användarnamnet är redan upptaget.");
         }
-    }*/
-
+    }
 
 
     @PostMapping("/login")

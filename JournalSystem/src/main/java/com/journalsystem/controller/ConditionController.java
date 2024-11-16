@@ -1,5 +1,6 @@
 package com.journalsystem.controller;
 
+import com.journalsystem.dto.ConditionDTO;
 import com.journalsystem.model.Condition;
 import com.journalsystem.model.Patient;
 import com.journalsystem.model.Practitioner;
@@ -26,8 +27,8 @@ public class ConditionController {
     private PatientService patientService;
 
     @GetMapping
-    public List<Condition> getAllConditions() {
-        return conditionService.getAllConditions();
+    public List<ConditionDTO> getAllConditions() {
+        return conditionService.getAllConditions().stream().map(ConditionDTO::new).toList();
     }
 
     @PostMapping
@@ -50,20 +51,20 @@ public class ConditionController {
     }
 
     @GetMapping("/{id}")
-    public Condition getConditionById(@PathVariable Long id) {
+    public ResponseEntity<ConditionDTO> getConditionById(@PathVariable Long id) {
         Condition condition = conditionService.getConditionById(id);
         if (condition == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Condition not found");
         }
-        return condition;
+        return ResponseEntity.ok(new ConditionDTO(condition));
     }
 
 
 
     @PreAuthorize("hasAnyAuthority('DOCTOR', 'PATIENT', 'STAFF')")
     @GetMapping("/patient/{patientId}")
-    public ResponseEntity<List<Condition>> getConditionsByPatientId(@PathVariable Long patientId) {
-        List<Condition> conditions = conditionService.getConditionsByPatientId(patientId);
+    public ResponseEntity<List<ConditionDTO>> getConditionsByPatientId(@PathVariable Long patientId) {
+        List<ConditionDTO> conditions = conditionService.getConditionsByPatientId(patientId);
         return ResponseEntity.ok(conditions);
     }
 }

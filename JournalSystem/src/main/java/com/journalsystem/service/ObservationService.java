@@ -1,6 +1,7 @@
 package com.journalsystem.service;
 
 import com.journalsystem.model.Observation;
+import com.journalsystem.dto.ObservationDTO;
 import com.journalsystem.model.Patient;
 import com.journalsystem.model.Practitioner;
 import com.journalsystem.model.User;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ObservationService {
@@ -68,8 +70,11 @@ public class ObservationService {
         return observationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Observation not found"));
     }
 
-    public List<Observation> getObservationsByPatientId(Long patientId) {
-        return observationRepository.findByPatientId(patientId);
+    public List<ObservationDTO> getObservationsByPatientId(Long patientId) {
+        List<Observation> observations = observationRepository.findByPatientId(patientId);
+        return observations.stream()
+                .map(ObservationDTO::new)  // Konvertera varje Observation till ObservationDTO
+                .collect(Collectors.toList());
     }
 
 }

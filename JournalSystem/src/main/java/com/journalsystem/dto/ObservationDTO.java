@@ -1,12 +1,30 @@
 package com.journalsystem.dto;
 
+import com.journalsystem.model.Observation;
+
 import java.util.Date;
 
 public class ObservationDTO {
+    private Long id;
     private String details;
     private Date observationDate;
-    private Long patientId;
-    private Long practitionerId;
+    private String practitionerName; // Endast namn på läkare
+
+    // Konstruktor för att mappa från Observation-entity
+    public ObservationDTO(Observation observation) {
+        this.id = observation.getId();
+        this.details = observation.getDetails();
+        this.observationDate = observation.getObservationDate();
+        this.practitionerName = observation.getPractitioner() != null ? observation.getPractitioner().getName() : "Unknown";
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getDetails() {
         return details;
@@ -24,19 +42,11 @@ public class ObservationDTO {
         this.observationDate = observationDate;
     }
 
-    public Long getPatientId() {
-        return patientId;
+    public String getPractitionerName() {
+        return practitionerName;
     }
 
-    public void setPatientId(Long patientId) {
-        this.patientId = patientId;
-    }
-
-    public Long getPractitionerId() {
-        return practitionerId;
-    }
-
-    public void setPractitionerId(Long practitionerId) {
-        this.practitionerId = practitionerId;
+    public void setPractitionerName(String practitionerName) {
+        this.practitionerName = practitionerName;
     }
 }

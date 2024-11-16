@@ -2,10 +2,14 @@ package com.journalsystem.controller;
 
 import com.journalsystem.model.Message;
 import com.journalsystem.model.User;
+import com.journalsystem.model.*;
+import com.journalsystem.dto.*;
 import com.journalsystem.service.MessageService;
 import com.journalsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +25,7 @@ public class MessageController {
     @Autowired
     private UserService userService;
 
-    @GetMapping
+    @GetMapping("/all")
     public List<Message> getAllMessages() {
         return messageService.getAllMessages();
     }
@@ -46,14 +50,24 @@ public class MessageController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public Message createMessage(@RequestBody Message message) {
-        return messageService.createMessage(message);
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMessage(@PathVariable Long id) {
         messageService.deleteMessage(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<MessageDTO>> getMessagesForCurrentUser(Authentication authentication) {
+        List<MessageDTO> messages = messageService.getMessagesForUser(authentication.getName());
+        return ResponseEntity.ok(messages);
+    }
+
+    @PostMapping("/send")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> sendMessage(@RequestBody MessageDTO messageDTO, Authentication authentication) {
+        messageService.sendMessage(messageDTO, authentication.getName());
+        return ResponseEntity.ok("Message sent successfully");
     }
 }

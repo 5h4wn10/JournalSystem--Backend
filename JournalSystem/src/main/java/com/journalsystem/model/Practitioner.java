@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Practitioner {
@@ -20,10 +21,22 @@ public class Practitioner {
     private String name;
     private String specialty;
 
-
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER) // Fetch all roles eagerly
+    @CollectionTable(name = "practitioner_roles", joinColumns = @JoinColumn(name = "practitioner_id"))
+    @Column(name = "role")
+    private Set<Role> roles; // Roles assigned to the practitioner
 
     @OneToMany(mappedBy = "practitioner")
     private List<Observation> observations;
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 
     @OneToMany(mappedBy = "practitioner")
     private List<Encounter> encounters;

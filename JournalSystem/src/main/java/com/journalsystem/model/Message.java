@@ -13,15 +13,20 @@ public class Message {
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date sentAt;
+
+    @PrePersist
+    protected void onCreate() {
+        sentAt = new Date();
+    }
 
     // Getters and Setters
 
