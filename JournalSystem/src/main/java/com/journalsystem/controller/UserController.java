@@ -76,4 +76,10 @@ public class UserController {
 
         return ResponseEntity.ok(receivers);
     }
+
+    @GetMapping("/current")
+    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
+        User currentUser = userService.findUserByUsername(authentication.getName());
+        return ResponseEntity.ok(new UserDTO(currentUser)); // Returnera som DTO
+    }
 }
