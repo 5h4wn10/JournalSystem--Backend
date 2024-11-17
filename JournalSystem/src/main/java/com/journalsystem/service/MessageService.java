@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +63,24 @@ public class MessageService {
         messageRepository.save(message);
     }
 
+
+    public List<Message> getConversation(Long userId1, Long userId2) {
+        // Hämta meddelanden där userId1 är avsändare och userId2 är mottagare
+        List<Message> messages1 = messageRepository.findBySenderIdAndReceiverIdOrderBySentAtAsc(userId1, userId2);
+
+        // Hämta meddelanden där userId2 är avsändare och userId1 är mottagare
+        List<Message> messages2 = messageRepository.findByReceiverIdAndSenderIdOrderBySentAtAsc(userId1, userId2);
+
+        // Kombinera och returnera listan
+        List<Message> allMessages = new ArrayList<>();
+        allMessages.addAll(messages1);
+        allMessages.addAll(messages2);
+
+        // Sortera listan efter skickat-tid
+        allMessages.sort((m1, m2) -> m1.getSentAt().compareTo(m2.getSentAt()));
+
+        return allMessages;
+    }
     public void deleteMessage(Long id) {
         messageRepository.deleteById(id);
     }

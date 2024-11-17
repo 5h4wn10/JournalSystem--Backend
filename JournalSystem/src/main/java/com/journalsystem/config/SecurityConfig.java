@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Lägg till CORS-konfiguration
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/observations/**", "/api/conditions/**").hasAnyAuthority("DOCTOR", "PATIENT")
+                        .requestMatchers("/api/observations/**", "/api/conditions/**").hasAnyAuthority("DOCTOR", "PATIENT","STAFF")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());

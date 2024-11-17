@@ -42,6 +42,10 @@ public class User implements UserDetails {
                 .collect(Collectors.toList());
     }
 
+    public boolean hasRole(String roleName) {
+        return roles.stream().anyMatch(role -> role.name().equals(roleName));
+    }
+
 
     public Long getId() {
         return id;
